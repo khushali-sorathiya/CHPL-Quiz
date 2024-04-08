@@ -28,11 +28,32 @@ class ResultVC: UIViewController {
     
     @IBOutlet weak var btnHome: UIButton!
     
+    var arrQuestion = [Question]()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        var right = 0
+        var wrong = 0
+        var skip = 0
+        for i in arrQuestion {
+            if i.selectAnswer == i.answer {
+                right += 1
+            }else if i.selectAnswer == "" {
+                skip += 1
+            }else {
+                wrong += 1
+            }
+        }
+        
+        lblOutof.text = "\(right) out of 10"
+        lblRightAns.text = "Your right answer is : \(right)"
+        lblWrongAns.text  = "Your wrong answer is : \(wrong)"
+        lblSkipAns.text = "Your skip answer is : \(skip)"
+        
     }
     
     static var storyboardInstance: ResultVC {

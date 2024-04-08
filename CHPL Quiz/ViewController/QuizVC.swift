@@ -25,6 +25,7 @@ class QuizVC: UIViewController {
     @IBOutlet weak var btnPrevious: UIButton!{
         didSet {
             btnPrevious.setTitle("", for: .normal)
+            btnPrevious.isHidden = true
         }
     }
     @IBOutlet weak var btnNext: UIButton!{
@@ -49,7 +50,10 @@ class QuizVC: UIViewController {
         clvQuestion.register(UINib(nibName: "QuizQuestionCC", bundle: nil), forCellWithReuseIdentifier: "QuizQuestionCC")
         // Do any additional setup after loading the view.
         
-        getData()
+      
+        NotificationCenter.default.addObserver(self, selector: #selector(self.receiveNotification(_:)), name: NSNotification.Name("answerSelect"), object: nil)
+        
+        clvQuestion.reloadData()
     }
     
 
@@ -63,13 +67,18 @@ class QuizVC: UIViewController {
     
     
     @IBAction func btnPreviousAction(_ sender: Any) {
-        print("call.....")
         if currentQuestion > 1 {
             currentQuestion -= 1
+            btnNext.isHidden = false
             lblquestionNumber.text = "Question \(currentQuestion) of 10"
-            clvQuestion.scrollToItem(at: IndexPath(row: currentQuestion - 1, section: 0), at: .left, animated: false)
-            self.clvQuestion.reloadData()
+            clvQuestion.scrollToItem(at: IndexPath(row: currentQuestion - 1, section: 0), at: .right, animated: true)
         }
+        if currentQuestion == 1 {
+            btnPrevious.isHidden = true
+        }else {
+            btnPrevious.isHidden = false
+        }
+        
         if currentQuestion == 10 {
             btnSubmit.isHidden = false
         }else {
@@ -79,60 +88,39 @@ class QuizVC: UIViewController {
     
     
     @IBAction func btnNextAction(_ sender: Any) {
-        print("call...")
         if currentQuestion < 10 {
             currentQuestion += 1
+            btnPrevious.isHidden = false
             lblquestionNumber.text = "Question \(currentQuestion) of 10"
             if currentQuestion == 10 {
                 btnSubmit.isHidden = false
             }else {
                 btnSubmit.isHidden = true
             }
-            clvQuestion.scrollToItem(at: IndexPath(row: currentQuestion - 1, section: 0), at: .right, animated: false)
+            clvQuestion.scrollToItem(at: IndexPath(row: currentQuestion - 1, section: 0), at: .left, animated: true)
+        }
+        if currentQuestion == 10 {
+            btnNext.isHidden = true
+        }else {
+            btnNext.isHidden = false
         }
     }
     
     @IBAction func btnSubmitAction(_ sender: Any) {
-        self.navigationController?.pushViewController(ResultVC.storyboardInstance, animated: true)
+        let vc = ResultVC.storyboardInstance
+        vc.arrQuestion = arrQuestion
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
-    func getData() {
-        let url = URL(string: "https://dev.my-company.app/demo.json")!
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-          if let error = error {
-            // handle the error
-          } else if let data = data, let response = response as? HTTPURLResponse {
-            if response.statusCode == 200 {
-                let responce = String(data:data, encoding: .utf8)!
-               
-                do {
-
-                    let parsedData = try JSONSerialization.jsonObject(with: data) as! [[String:Any]]
-                    for i in parsedData {
-                        
-                            self.arrQuestion.append(Question(dict: i))
-                            if self.arrQuestion.count == 10 {
-                                
-                                print(self.arrQuestion)
-                                break
-                            }
-                       
-                                            
-                                        }
-                    
-                    } catch let error as NSError {
-                      print(error)
-                    }
-    
-                self.clvQuestion.reloadData()
-            } else {
-              
+    @objc func receiveNotification(_ notification: Notification?) {
+        if let dict = notification?.userInfo as? [String:Any] {
+            if let answer = dict["answer"] as? String {
+                self.arrQuestion[currentQuestion - 1].selectAnswer = answer
             }
-          }
-        }
-
-        task.resume()
+         }
     }
+    
+    
     
     
 }
@@ -141,12 +129,14 @@ class QuizVC: UIViewController {
 extension QuizVC : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return arrQuestion.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        print(indexPath)
         let cell = clvQuestion.dequeueReusableCell(withReuseIdentifier: "QuizQuestionCC", for: indexPath) as! QuizQuestionCC
         cell.cellData = arrQuestion[indexPath.row]
+        print(cell.cellData?.question)
         return cell
     }
     

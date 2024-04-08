@@ -16,6 +16,7 @@ class QuizQuestionCC: UICollectionViewCell {
 
     @IBOutlet weak var btnAns1: UIButton!{
         didSet {
+            
             btnAns1.setImage(UIImage(systemName:"checkmark.square" ), for: .normal)
             btnAns1.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
         }
@@ -26,6 +27,7 @@ class QuizQuestionCC: UICollectionViewCell {
     @IBOutlet weak var stackAns2: UIStackView!
     @IBOutlet weak var btnAns2: UIButton!{
         didSet {
+            
             btnAns2.setImage(UIImage(systemName:"checkmark.square" ), for: .normal)
             btnAns2.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
         }
@@ -34,6 +36,7 @@ class QuizQuestionCC: UICollectionViewCell {
     @IBOutlet weak var stackAns3: UIStackView!
     @IBOutlet weak var btnAns3: UIButton!{
         didSet {
+            
             btnAns3.setImage(UIImage(systemName:"checkmark.square" ), for: .normal)
             btnAns3.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
         }
@@ -42,6 +45,7 @@ class QuizQuestionCC: UICollectionViewCell {
     @IBOutlet weak var stackAns4: UIStackView!
     @IBOutlet weak var btnAns4: UIButton!{
         didSet {
+           
             btnAns4.setImage(UIImage(systemName:"checkmark.square" ), for: .normal)
             btnAns4.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
         }
@@ -50,6 +54,7 @@ class QuizQuestionCC: UICollectionViewCell {
     @IBOutlet weak var stackAns5: UIStackView!
     @IBOutlet weak var btnAns5: UIButton!{
         didSet {
+            
             btnAns5.setImage(UIImage(systemName:"checkmark.square" ), for: .normal)
             btnAns5.setImage(UIImage(systemName: "checkmark.square.fill"), for: .selected)
         }
@@ -79,6 +84,23 @@ class QuizQuestionCC: UICollectionViewCell {
             lblAns4.text = data.ans4
             lblAns5.text = data.ans5
             
+            btnAns1.isSelected = false
+            btnAns2.isSelected = false
+            btnAns3.isSelected = false
+            btnAns4.isSelected = false
+            btnAns5.isSelected = false
+            if data.selectAnswer == "ans1" {
+                btnAns1.isSelected = true
+            }else if data.selectAnswer == "ans2" {
+                btnAns2.isSelected = true
+            }else if data.selectAnswer == "ans3" {
+                btnAns3.isSelected = true
+            }else if data.selectAnswer == "ans4" {
+                btnAns4.isSelected = true
+            }else if data.selectAnswer == "ans5" {
+                btnAns5.isSelected = true
+            }
+            
             if data.ans5 == "" {
                 stackAns5.isHidden = true
             }
@@ -98,6 +120,10 @@ class QuizQuestionCC: UICollectionViewCell {
         btnAns3.isSelected = false
         btnAns4.isSelected = false
         btnAns5.isSelected = false
+        
+        let data = ["answer":"ans1"] as [String : Any]
+        NotificationCenter.default.post(name: NSNotification.Name("answerSelect"), object: nil,userInfo: data)
+
     }
     
     
@@ -107,6 +133,8 @@ class QuizQuestionCC: UICollectionViewCell {
         btnAns3.isSelected = false
         btnAns4.isSelected = false
         btnAns5.isSelected = false
+        let data = ["answer":"ans2"] as [String : Any]
+        NotificationCenter.default.post(name: NSNotification.Name("answerSelect"), object: nil,userInfo: data)
     }
     
     @IBAction func btnAns3Action(_ sender: Any) {
@@ -115,6 +143,8 @@ class QuizQuestionCC: UICollectionViewCell {
         btnAns3.isSelected = !btnAns1.isSelected
         btnAns4.isSelected = false
         btnAns5.isSelected = false
+        let data = ["answer":"ans3"] as [String : Any]
+        NotificationCenter.default.post(name: NSNotification.Name("answerSelect"), object: nil,userInfo: data)
     }
     
     @IBAction func btnAns4Action(_ sender: Any) {
@@ -123,6 +153,8 @@ class QuizQuestionCC: UICollectionViewCell {
         btnAns3.isSelected = false
         btnAns4.isSelected = !btnAns1.isSelected
         btnAns5.isSelected = false
+        let data = ["answer":"ans4"] as [String : Any]
+        NotificationCenter.default.post(name: NSNotification.Name("answerSelect"), object: nil,userInfo: data)
     }
     
     @IBAction func btnAns5Action(_ sender: Any) {
@@ -131,6 +163,8 @@ class QuizQuestionCC: UICollectionViewCell {
         btnAns3.isSelected = false
         btnAns4.isSelected = false
         btnAns5.isSelected = !btnAns1.isSelected
+        let data = ["answer":"ans5"] as [String : Any]
+        NotificationCenter.default.post(name: NSNotification.Name("answerSelect"), object: nil,userInfo: data)
     }
     
 
